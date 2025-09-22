@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Chat Twitch 3D</title>
+
+<style>
+  /* rendre la page transparente (utile pour OBS : coche "Allow transparency") */
+  html,body{
+    height:100%;
+    margin:0;
+    background: transparent;
+    overflow: hidden;
+  }
+
+  /* container qui gère perspective */
+  .stage{
+    width: 420px;      /* largeur visible du chat (ajuste) */
+    height: 800px;     /* hauteur visible du chat (ajuste) */
+    margin: 0;
+    position: relative;
+    perspective: 1400px;               /* plus grand = perspective plus douce */
+    -webkit-perspective: 1400px;
+    transform-style: preserve-3d;
+  }
+
+  /* panneau du chat (coin arrondi + ombre) */
+  .panel{
+    width:100%;
+    height:100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform-origin: left center;     /* origine du skew/rotation */
+    /* Transformations 3D — personnalise les valeurs plus bas */
+    transform: rotateY(-18deg) skewY(-6deg) translateZ(-40px) translateX(-10px);
+    -webkit-transform: rotateY(-18deg) skewY(-6deg) translateZ(-40px) translateX(-10px);
+    overflow: hidden;
+    border-radius: 14px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.45);
+    background: rgba(0,0,0,0.22); /* léger fond pour lisibilité si besoin */
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  /* iframe du chat Twitch */
+  iframe{
+    width: 100%;
+    height: 100%;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    display: block;
+    background: transparent;
+  }
+
+  /* options utiles : cacher la barre de scroll si tu veux */
+  .panel::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="panel">
+      <!-- Remplace TON_CHANNEL par ton nom de chaîne Twitch -->
+      <iframe src="https://www.twitch.tv/popout/ze_bubu/chat?popout=" allowtransparency="true"></iframe>
+    </div>
+  </div>
+
+  <!--
+    Paramètres rapides (change ici si tu veux ajuster sans toucher le CSS au-dessus)
+    - rotationY : angle en degrés (positif = vers la droite, négatif = vers la gauche)
+    - skewY : inclinaison verticale
+    - translateZ : profondeur (valeur négative = recule = plus de perspective)
+    - translateX : décalage horizontal (pour compenser)
+  -->
+  <script>
+    // --- configuration rapide ---
+    const config = {
+      rotationY: -18,
+      skewY: -6,
+      translateZ: -40,
+      translateX: -10,
+      channel: "ze_bubu" // modifie ici si tu préfères JS plutôt que l'HTML direct
+    };
+
+    // applique config (optionnel si tu as déjà modifié le HTML)
+    const panel = document.querySelector('.panel');
+    if(panel){
+      panel.style.transform =
+        `rotateY(${config.rotationY}deg) skewY(${config.skewY}deg) translateZ(${config.translateZ}px) translateX(${config.translateX}px)`;
+    }
+
+    // corriger src si tu as mis ton channel dans config
+    const ifr = document.querySelector('iframe');
+    if(ifr && config.channel && config.channel !== "ze_bubu"){
+      ifr.src = `https://www.twitch.tv/popout/${encodeURIComponent(config.channel)}/chat?popout=`;
+    }
+  </script>
+</body>
+</html>
